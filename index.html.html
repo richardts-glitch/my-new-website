@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>scan richard link </title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+  font-family:Arial,Helvetica,sans-serif; background:linear-gradient(135deg,#080b16,#111827);
+  color:#fff; padding:20px;
+}
+.card{
+  width:min(520px,100%); background:#151a29; border:1px solid #2b3348;
+  border-radius:24px; padding:30px; box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+h1{margin:0 0 8px;font-size:32px}
+.sub{color:#9ca7bd;margin:0 0 25px}
+label{display:block;margin:16px 0 8px;font-weight:700}
+input{
+  width:100%; padding:15px 16px; border-radius:13px; border:1px solid #35405a;
+  background:#0d1220;color:#fff;font-size:16px;outline:none;
+}
+input:focus{border-color:#7c5cff}
+button{
+  width:100%; border:0; padding:15px; margin-top:18px; border-radius:13px;
+  background:#7c5cff;color:#fff;font-size:16px;font-weight:700;cursor:pointer;
+}
+button:hover{filter:brightness(1.1)}
+.presets{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.presets button{
+  width:auto;margin:0;padding:9px 13px;background:#252d42;font-size:13px;
+}
+.qrbox{
+  display:none; margin-top:25px; background:#fff; padding:22px; border-radius:18px;
+  text-align:center;
+}
+#qrcode{display:flex;justify-content:center}
+#result{color:#222;font-size:13px;word-break:break-all;margin-top:12px}
+.download{display:none;background:#18a66a}
+.note{font-size:12px;color:#7f8ba3;text-align:center;margin-top:18px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🔗 scan richard link </h1>
+  <p class="sub">Type any website, generate a QR code, scan it, and open the website.</p>
+
+  <label for="url">Website link</label>
+  <input id="url" placeholder="e.g. youtube.com or https://spotify.com">
+
+  <div class="presets">
+    <button onclick="setSite('https://www.youtube.com')">YouTube</button>
+    <button onclick="setSite('https://open.spotify.com')">Spotify</button>
+    <button onclick="setSite('https://www.google.com')">Google</button>
+  </div>
+
+  <button onclick="makeQR()">Generate QR Code</button>
+
+  <div class="qrbox" id="qrbox">
+    <div id="qrcode"></div>
+    <div id="result"></div>
+  </div>
+
+  <button class="download" id="downloadBtn" onclick="downloadQR()">Download QR PNG</button>
+
+  <div class="note">
+    The QR code stores the website address. When someone scans it with a phone camera,
+    the phone can open that website.
+  </div>
+</div>
+
+<script>
+let qr;
+
+function setSite(site){
+  document.getElementById("url").value = site;
+  makeQR();
+}
+
+function normalize(url){
+  url = url.trim();
+  if(!url) return "";
+  if(!/^https?:\/\//i.test(url)) url = "https://" + url;
+  return url;
+}
+
+function makeQR(){
+  const input = document.getElementById("url");
+  const url = normalize(input.value);
+
+  if(!url){
+    alert("Type a website link first.");
+    input.focus();
+    return;
+  }
+
+  try { new URL(url); }
+  catch(e){
+    alert("Please enter a valid website, such as youtube.com");
+    return;
+  }
+
+  document.getElementById("qrcode").innerHTML = "";
+  qr = new QRCode(document.getElementById("qrcode"), {
+    text:url,
+    width:220,
+    height:220,
+    colorDark:"#000000",
+    colorLight:"#ffffff",
+    correctLevel:QRCode.CorrectLevel.H
+  });
+
+  document.getElementById("result").textContent = url;
+  document.getElementById("qrbox").style.display = "block";
+  document.getElementById("downloadBtn").style.display = "block";
+}
+
+function downloadQR(){
+  const canvas = document.querySelector("#qrcode canvas");
+  const img = document.querySelector("#qrcode img");
+
+  if(canvas){
+    const a=document.createElement("a");
+    a.download="scanlink-qr.png";
+    a.href=canvas.toDataURL("image/png");
+    a.click();
+  } else if(img){
+    const a=document.createElement("a");
+    a.download="scanlink-qr.png";
+    a.href=img.src;
+    a.click();
+  }
+}
+
+document.getElementById("url").addEventListener("keydown", e=>{
+  if(e.key==="Enter") makeQR();
+});
+</script>
+</body>
+</html>
